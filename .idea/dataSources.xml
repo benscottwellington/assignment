@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="website.db" uuid="49a51bf8-7ce7-461e-aa72-bfd7c0e90ebf">
+    <data-source source="LOCAL" name="website.db" uuid="1233de57-bb30-48ff-b803-426fb5e36fd1">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
-      <remarks>databases for my website</remarks>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:C:\Users\18345\OneDrive - Wellington College\assignment\website.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>

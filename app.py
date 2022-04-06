@@ -20,7 +20,7 @@ def web_main_page():
 
     con = create_connection(DATABASE)
 
-    query = "SELECT category FROM dictionary"
+    query = "SELECT category, id FROM categories"
 
     cur = con.cursor()
     cur.execute(query)
