@@ -24,6 +24,14 @@
 			<ul>
                 <li><a href="\">Home</a></li>
 				<li><a href="\login">Login</a></li>
+				<div class="category">
+				{% for category in categories %}
+					<div class ="category-box">
+						<li>{{ category[0] }}</li>
+					</div>
+					{% endfor %}
+
+				</div>
 
 			</ul>
 		</nav>
@@ -36,7 +44,7 @@
 		-->
 
 		<main>
-            {% block main%}<h1>Welcome to Ben Scott's Maori to English dictionary</h1>{% endblock %}
+
         </main>
 
 

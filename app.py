@@ -27,7 +27,7 @@ def web_main_page():
     category_list = cur.fetchall()
     con.close()
 
-    return render_template('home.html', category = category_list)
+    return render_template('home.html', categories = category_list)
 
 @app.route('/login')
 def web_login():
