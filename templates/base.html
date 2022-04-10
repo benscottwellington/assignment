@@ -23,15 +23,15 @@
 			<span></span>
 			<ul>
                 <li><a href="\">Home</a></li>
-				<li><a href="\login">Login</a></li>
 				<div class="category">
 				{% for category in categories %}
 					<div class ="category-box">
 						<li><a href="category/{{ category[1] }}">{{ category[0] }}</a></li>
 					</div>
-					{% endfor %}
 
+                {% endfor %}
 				</div>
+				<li><a href="\login">Login</a></li>
 
 			</ul>
 		</nav>
