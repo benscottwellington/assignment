@@ -1,0 +1,19 @@
+{%  extends 'base.html' %}
+
+{% block pageheading %}Category{% endblock %}
+
+{% block main %}
+    <div class="words">
+    {% for words in word_list %}
+        <div class="word-box">
+            <h3>{{ words[0] }}</h3>
+             <p>{{ words[1]  }}</p>
+        <p><strong>dog </strong>{{ words[2] }}</p>
+        <p><strong>cat </strong>{{ words[4] }}</p>
+        {% if logged_in %}
+        <p align="centre"><br><a href="/word/{{ words[5] }}" >{{words[0]}}</a></p>
+        {% endif %}
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}
