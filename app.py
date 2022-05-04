@@ -34,10 +34,21 @@ def web_main_page():
     if request.method == 'POST':
         category = request.form.get('category').lower().strip()
 
-    return render_template('home.html', categories=get_category_list())
+
+    user_id = session['user_id']
+    print("User {} would like to add {} to category at {}".format(user_id, catID,))
+
+    con = create_connection(DATABASE)
+    query = "INSERT INTO categories (id, category) VALUES (NULL, ?, ?)"
+    cur = con.cursor()
+    cur.execute(query)
+    con.commit
+    con.close
+
+    return render_template('home.html', categories=get_category_list(), logged_in=is_logged_in())
 
 @app.route('/category')
-def web_category_page():
+def web_category_page(catID):
     con = create_connection(DATABASE)
     query = "SELECT maori_word, english_word, decription, level, id FROM words"
     cur = con.cursor()
@@ -47,7 +58,7 @@ def web_category_page():
     cur.close()
 
 
-    return render_template('category.html', categories=get_category_list(), words=words_list)
+    return render_template('category.html', categories=get_category_list(), words=words_list, logged_in=is_logged_in())
 
 
 
@@ -99,7 +110,7 @@ def web_login():
         print(session)
         return redirect("/")
 
-    return render_template('login.html', categories=get_category_list())
+    return render_template('login.html', categories=get_category_list(), logged_in=is_logged_in())
 
 @app.route('/signup', methods=['POST', 'GET'])
 def web_signup():
@@ -133,7 +144,18 @@ def web_signup():
         except sqlite3.IntegrityError:
             return redirect('/signup?error=email+is+already+in+use')
 
-    return render_template('signup.html')
+        con.commit()
+        con.close()
+        return redirect('/login')
+
+    return render_template('signup.html', categories=get_category_list(), logged_in=is_logged_in())
+
+@app.route('/logout')
+def web_logout():
+    print(list(session.keys()))
+    [session.pop(key) for key in list(session.keys())]
+    print(list(session.keys()))
+    return redirect('/')
 
 def is_logged_in():
     if session.get("email") is None:

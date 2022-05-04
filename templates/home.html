@@ -5,7 +5,15 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block main %}
-this is the home page
+<form class="dataForm" method="POST" >
+    <div class="form-group">
+        <div class="form-label">Category:</div>
+        <div class="form-element"><input type=category" name="category" id="category" required></div>
+    </div>
+    <div class="button-group">
+        <div class="form-label"></div>
+        <div class="button-group"><input type="submit" value="Add"></div>
+    </div>
 {% endblock %}
 
 <body>
