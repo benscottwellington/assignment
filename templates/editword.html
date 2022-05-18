@@ -1,0 +1,33 @@
+{%  extends 'base.html' %}
+
+{% block heading %}Category{% endblock %}
+
+{% block main %}
+{% if logged_in %}
+{% for word in words %}
+<a href="/word/{{ word [3] }}">Cancel</a>
+ <form class="dataForm" method="post">
+     <div class="form-group">
+        <div class="form-label">New Maori Word (Currently {{ word[0] }}):</div>
+        <div class="form-element"><input type="text" name="new_maori_word" id="new_maori_word" required></div>
+     </div>
+     <div class="form-group">
+        <div class="form-label">New English Word (Currently {{ word[1] }}):</div>
+        <div class="form-element"><input type="text" name="new_english_word" id="new_english_word" required></div>
+     </div>
+     <div class="form-group">
+        <div class="form-label">New Level (Currently {{ word[5] }}):</div>
+        <div class="form-element"><input type="number" name="new_level" id="new_level" required></div>
+     </div>
+     <div class="form-group">
+        <div class="form-label">Definition ( Currently {{ word[4] }}):</div>
+        <div class="form-element"><input type="text" name="new_definition" id="new_definition" required></div>
+     </div>
+     <div class="button-group">
+        <div class="form-label"></div>
+        <div class="button-group"><input type="submit" value="Add"></div>
+    </div>
+ </form>
+{% endfor %}
+{% endif %}
+{% endblock %}

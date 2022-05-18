@@ -4,7 +4,10 @@
 
 {% block main %}
 {% for word in words %}
+{% if logged_in %}
 <p><strong>{{ word [0]}}</strong> ({{ word [1]}})</p>
+<p><a href="/editword/{{ word[3] }}">EDIT</a> || <a href="/confirmremoveword/{{ word[3] }}">DELETE</a></p>
+{% endif %}
 {% endfor %}
 <table class="words-table">
         <thead>

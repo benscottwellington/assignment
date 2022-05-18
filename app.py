@@ -52,7 +52,7 @@ def web_main_page():
 @app.route('/category/<catID>',methods=['POST', 'GET'])
 def web_categories_page(catID):
 
-    query = "SELECT maori_word, english_word, catID, userid, id, description, image FROM words WHERE catID IS ?"
+    query = "SELECT maori_word, english_word, catID, userid, id, description, image FROM words WHERE catID IS ? ORDER BY maori_word ASC"
     con = create_connection(DATABASE)
     cur = con.cursor()
     cur.execute(query,(catID,))
@@ -63,10 +63,10 @@ def web_categories_page(catID):
     print(word_list)
 
     if request.method == 'POST':
-        maori_word = request.form.get('maori_word').title().strip()
-        english_word = request.form.get('english_word').title().strip()
+        maori_word = request.form.get('maori_word').strip()
+        english_word = request.form.get('english_word').strip()
         level = int(request.form.get('level').strip())
-        definition = request.form.get('definition').title().strip()
+        definition = request.form.get('definition').strip()
         timestamp = datetime.datetime.now()
 
         query = "SELECT first_name, last_name FROM user"
@@ -135,6 +135,68 @@ def web_remove_word(wordid):
     con.close()
     print("e")
     return redirect ('/category/{0}'.format(catID[0]))
+
+@app.route('/confirmremoveword/<wordid>')
+def web_confirm_remove_word(wordid):
+
+    query = "SELECT maori_word, english_word, userid, id, description, level, timestamp, image FROM words WHERE id IS ?"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (wordid,))
+
+    word_list = cur.fetchall()
+    con.close()
+
+    return render_template ('removeword.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list)
+
+@app.route('/editword/<wordid>',methods=['POST', 'GET'])
+def web_edit_word(wordid):
+    try:
+        int(wordid)
+    except ValueError:
+        return redirect('/')
+
+    query = "SELECT maori_word, english_word, userid, id, description, level, timestamp, image FROM words WHERE id IS ?"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (wordid,))
+
+    word_list = cur.fetchall()
+    con.close()
+
+    if request.method == 'POST':
+        new_maori_word = request.form.get('new_maori_word').strip()
+        new_english_word = request.form.get('new_english_word').strip()
+        new_level = int(request.form.get('new_level').strip())
+        new_definition = request.form.get('new_definition').strip()
+        new_timestamp = datetime.datetime.now()
+
+        if new_level > 10 or new_level < 1:
+            return redirect('/editword/{0}?Error=Level+is+invalid'.format(wordid))
+
+        query = "SELECT first_name, last_name FROM user"
+        con = create_connection(DATABASE)
+        cur = con.cursor()
+        cur.execute(query)
+        user_data = cur.fetchall()
+        con.close()
+
+        first_name = user_data[0][0]
+        last_name = user_data[0][1]
+        new_userid = first_name + ' ' + last_name
+
+        query = "UPDATE words SET maori_word = ?, english_word = ?, userid = ?, id = ?, description = ?, level = ?, timestamp = ? WHERE id IS ?"
+        con = create_connection(DATABASE)
+        cur = con.cursor()
+        cur.execute(query, (new_maori_word, new_english_word, new_userid, wordid, new_definition, new_level, new_timestamp, wordid))
+        con.commit()
+        con.close()
+
+        print(wordid)
+
+        return redirect ('/word/{0}'.format(wordid))
+
+    return render_template('editword.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list)
 
 @app.route('/removecategory/<catID>')
 def web_remove_category(catID):
