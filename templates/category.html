@@ -3,17 +3,56 @@
 {% block heading %}Category{% endblock %}
 
 {% block main %}
-    <div class="words">
-    {% for words in word_list %}
-        <div class="word-box">
-            <h3>{{ words[0] }}</h3>
-             <p>{{ words[1]  }}</p>
-        <p><strong>dog </strong>{{ words[2] }}</p>
-        <p><strong>cat </strong>{{ words[4] }}</p>
-        {% if logged_in %}
-        <p align="centre"><br><a href="/word/{{ words[5] }}" >{{words[0]}}</a></p>
-        {% endif %}
-        </div>
-    {% endfor %}
+<table class="words-table">
+        <thead>
+            <tr>
+                <th>Maori Word</th>
+                <th>English Word</th>
+                <th>Image</th>
+                {% if logged_in %}
+                <th>Delete Word</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for word in words %}
+            <div class = words-box>
+            <tr>
+                <td><a href="/word/{{ word[4] }}">{{ word[0] }}</a></td>
+                <td>{{ word[1] }}</td>
+                <td><img src="static/images/{{ word[6] }}.png" alt=""></td>
+                {% if logged_in %}
+                <td><a href="/removeword/{{ word[4] }}">x</a></td>
+                {% endif %}
+            </tr>
+            </div>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if logged_in %}
+ <form class="dataForm" method="post">
+     <div class="form-group">
+        <div class="form-label">Maori Word:</div>
+        <div class="form-element"><input type="text" name="maori_word" id="maori_word" required></div>
+     </div>
+     <div class="form-group">
+        <div class="form-label">English Word:</div>
+        <div class="form-element"><input type="text" name="english_word" id="english_word" required></div>
+     </div>
+     <div class="form-group">
+        <div class="form-label">Level:</div>
+        <div class="form-element"><input type="number" name="level" id="level" required></div>
+     </div>
+     <div class="form-group">
+        <div class="form-label">Definition:</div>
+        <div class="form-element"><input type="text" name="definition" id="definition" required></div>
+     </div>
+     <div class="button-group">
+        <div class="form-label"></div>
+        <div class="button-group"><input type="submit" value="Add"></div>
     </div>
+ </form>
+<a href="/removecategory/{{category}}">DELETE THE CATEGORY</a>
+{% endif %}
 {% endblock %}

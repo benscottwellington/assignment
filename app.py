@@ -2,12 +2,13 @@ from flask import Flask, render_template, request, session, redirect
 import sqlite3
 from sqlite3 import Error
 from flask_bcrypt import Bcrypt
-from datetime import datetime
+import datetime
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 DATABASE = "website.db"
 app.secret_key = "srugy8rthy8gyrsuaisgbi89ujdf"
+
 
 def create_connection(db_file):
     try:
@@ -18,6 +19,7 @@ def create_connection(db_file):
 
     return None
 
+
 def get_category_list():
     con = create_connection(DATABASE)
 
@@ -26,56 +28,129 @@ def get_category_list():
     cur = con.cursor()
     cur.execute(query)
     category_list = cur.fetchall()
-    con.close
+    con.close()
     return category_list
 
 @app.route('/', methods=['POST', 'GET'])
 def web_main_page():
     if request.method == 'POST':
-        category = request.form.get('category').lower().strip()
+        print(request.form)
+        category = request.form.get('category').title()
+        print(category)
 
+        con = create_connection(DATABASE)  # SUCK MY NUTS !!!
+        query = "INSERT INTO categories (category) VALUES(?)"
+        cur = con.cursor()
+        cur.execute(query, (category,))
+        con.commit()
+        con.close()
 
-    user_id = session['user_id']
-    print("User {} would like to add {} to category at {}".format(user_id, catID,))
-
-    con = create_connection(DATABASE)
-    query = "INSERT INTO categories (id, category) VALUES (NULL, ?, ?)"
-    cur = con.cursor()
-    cur.execute(query)
-    con.commit
-    con.close
+        return redirect('/')
 
     return render_template('home.html', categories=get_category_list(), logged_in=is_logged_in())
 
-@app.route('/category')
-def web_category_page(catID):
-    con = create_connection(DATABASE)
-    query = "SELECT maori_word, english_word, decription, level, id FROM words"
-    cur = con.cursor()
-    cur.execute(query)
-
-    words_list = cur.fetchall()
-    cur.close()
-
-
-    return render_template('category.html', categories=get_category_list(), words=words_list, logged_in=is_logged_in())
-
-
-
-@app.route('/category/<catID>')
+@app.route('/category/<catID>',methods=['POST', 'GET'])
 def web_categories_page(catID):
 
+    query = "SELECT maori_word, english_word, catID, userid, id, description, image FROM words WHERE catID IS ?"
     con = create_connection(DATABASE)
-
-    query = "SELECT maori_word, english_word, description, level, id " \
-            "FROM words WHERE catID=? ORDER BY maori_word ASC"
-
     cur = con.cursor()
     cur.execute(query,(catID,))
-    words_list = cur.fetchall
-    con.close
 
-    return render_template('category.html', words_list=words_list, categories=get_category_list())
+    word_list = cur.fetchall()
+    con.close()
+    print(catID)
+    print(word_list)
+
+    if request.method == 'POST':
+        maori_word = request.form.get('maori_word').title().strip()
+        english_word = request.form.get('english_word').title().strip()
+        level = int(request.form.get('level').strip())
+        definition = request.form.get('definition').title().strip()
+        timestamp = datetime.datetime.now()
+
+        query = "SELECT first_name, last_name FROM user"
+        con = create_connection(DATABASE)
+        cur = con.cursor()
+        cur.execute(query)
+        user_data = cur.fetchall()
+        con.close()
+
+        first_name = user_data[0][0]
+        last_name = user_data[0][1]
+        userid = first_name + ' ' + last_name
+
+        if level > 10 or level < 1:
+            return redirect('/category/{0}?Error=Level+is+invalid'.format(catID))
+
+        query = "INSERT INTO words(maori_word, english_word, catID, level, userid, id, description, timestamp) VALUES (?, ?, ?, ?, ?, NULL, ?, ?)"
+        con = create_connection(DATABASE)
+        cur = con.cursor()
+        cur.execute(query, (maori_word, english_word, catID, level, userid, definition, timestamp, ))
+        con.commit()
+        con.close()
+
+        return redirect('/category/{0}'.format(catID))
+
+    return render_template('category.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list, category=catID)
+
+@app.route('/word/<wordid>')
+def web_words_page(wordid):
+    try:
+        int(wordid)
+    except ValueError:
+        return redirect('/')
+
+    query = "SELECT maori_word, english_word, userid, id, description, level, timestamp, image FROM words WHERE id IS ?"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (wordid,))
+
+    word_list = cur.fetchall()
+    con.close()
+    print(word_list)
+
+    return render_template('words.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list,)
+
+@app.route('/removeword/<wordid>')
+def web_remove_word(wordid):
+    try:
+        int(wordid)
+    except ValueError:
+        return redirect('/')
+
+    query = "SELECT catID FROM words WHERE id IS ?"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (wordid,))
+    catID = cur.fetchone()
+    con.close()
+    print("fhfdh")
+
+    query = "DELETE FROM words WHERE id IS ?"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (wordid,))
+    con.commit()
+    con.close()
+    print("e")
+    return redirect ('/category/{0}'.format(catID[0]))
+
+@app.route('/removecategory/<catID>')
+def web_remove_category(catID):
+    try:
+        int(catID)
+    except ValueError:
+        return redirect('/')
+
+    query = "DELETE FROM categories WHERE id IS ?"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (catID,))
+    con.commit()
+    con.close()
+    print("e")
+    return redirect ('/')
 
 @app.route('/login', methods=['POST', 'GET'])
 def web_login():
@@ -89,7 +164,7 @@ def web_login():
         query = "SELECT id, first_name, password FROM user WHERE email =?"
         con = create_connection(DATABASE)
         cur = con.cursor()
-        cur.execute(query, (email, ))
+        cur.execute(query, (email,))
         user_data = cur.fetchall()
         con.close()
 
@@ -111,6 +186,7 @@ def web_login():
         return redirect("/")
 
     return render_template('login.html', categories=get_category_list(), logged_in=is_logged_in())
+
 
 @app.route('/signup', methods=['POST', 'GET'])
 def web_signup():
@@ -150,12 +226,14 @@ def web_signup():
 
     return render_template('signup.html', categories=get_category_list(), logged_in=is_logged_in())
 
+
 @app.route('/logout')
 def web_logout():
     print(list(session.keys()))
     [session.pop(key) for key in list(session.keys())]
     print(list(session.keys()))
     return redirect('/')
+
 
 def is_logged_in():
     if session.get("email") is None:

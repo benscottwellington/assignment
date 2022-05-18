@@ -1,0 +1,31 @@
+{%  extends 'base.html' %}
+
+{% block heading %}Category{% endblock %}
+
+{% block main %}
+{% for word in words %}
+<p><strong>{{ word [0]}}</strong> ({{ word [1]}})</p>
+{% endfor %}
+<table class="words-table">
+        <thead>
+            <tr>
+                <th>Definition:</th>
+                <th>Level:</th>
+                <th>Date added:</th>
+                <th>Edited By:</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for word in words %}
+            <div class = words-box>
+            <tr>
+                <td>{{ word[4] }}</td>
+                <td>{{ word[5] }}</td>
+                <td>{{ word[6] }}</td>
+                <td>{{ word[2] }}</td>
+            </tr>
+            </div>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
