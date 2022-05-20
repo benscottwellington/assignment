@@ -5,7 +5,7 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block main %}
-{% if logged_in %}
+{% if teacher %}
 {% for word in words %}
 <p> Are you sure you want to remove {{ word [0] }}({{ word [1] }})</p>
 <p><a href="/removeword/{{ word[3] }}">YES</a> <a href="/word/{{ word[3] }}">NO</a></p>

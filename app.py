@@ -47,7 +47,7 @@ def web_main_page():
 
         return redirect('/')
 
-    return render_template('home.html', categories=get_category_list(), logged_in=is_logged_in())
+    return render_template('home.html', categories=get_category_list(), logged_in=is_logged_in(), teacher=is_teacher())
 
 @app.route('/category/<catID>',methods=['POST', 'GET'])
 def web_categories_page(catID):
@@ -92,7 +92,7 @@ def web_categories_page(catID):
 
         return redirect('/category/{0}'.format(catID))
 
-    return render_template('category.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list, category=catID)
+    return render_template('category.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list, category=catID, teacher=is_teacher())
 
 @app.route('/word/<wordid>')
 def web_words_page(wordid):
@@ -110,7 +110,7 @@ def web_words_page(wordid):
     con.close()
     print(word_list)
 
-    return render_template('words.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list,)
+    return render_template('words.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list, teacher=is_teacher())
 
 @app.route('/removeword/<wordid>')
 def web_remove_word(wordid):
@@ -147,10 +147,13 @@ def web_confirm_remove_word(wordid):
     word_list = cur.fetchall()
     con.close()
 
-    return render_template ('removeword.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list)
+    return render_template ('removeword.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list, teacher=is_teacher())
 
 @app.route('/editword/<wordid>',methods=['POST', 'GET'])
 def web_edit_word(wordid):
+    if not is_teacher():
+        return redirect("/")
+
     try:
         int(wordid)
     except ValueError:
@@ -196,7 +199,7 @@ def web_edit_word(wordid):
 
         return redirect ('/word/{0}'.format(wordid))
 
-    return render_template('editword.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list)
+    return render_template('editword.html', categories=get_category_list(), logged_in=is_logged_in(), words=word_list, teacher=is_teacher())
 
 @app.route('/removecategory/<catID>')
 def web_remove_category(catID):
@@ -223,7 +226,7 @@ def web_login():
         email = request.form.get('email').lower().strip()
         password = request.form.get('password')
 
-        query = "SELECT id, first_name, password FROM user WHERE email =?"
+        query = "SELECT id, first_name, password, role FROM user WHERE email =?"
         con = create_connection(DATABASE)
         cur = con.cursor()
         cur.execute(query, (email,))
@@ -234,6 +237,7 @@ def web_login():
             user_id = user_data[0][0]
             first_name = user_data[0][1]
             db_password = user_data[0][2]
+            role = user_data[0][3]
 
         except IndexError:
             return redirect("/login?error=Email+or+password+incorrect")
@@ -244,10 +248,11 @@ def web_login():
         session['email'] = email
         session['user_id'] = user_id
         session['first_name'] = first_name
+        session['role'] = role
         print(session)
         return redirect("/")
 
-    return render_template('login.html', categories=get_category_list(), logged_in=is_logged_in())
+    return render_template('login.html', categories=get_category_list(), logged_in=is_logged_in(), teacher=is_teacher())
 
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -260,8 +265,11 @@ def web_signup():
         fname = request.form.get('fname').title().strip()
         lname = request.form.get('lname').title().strip()
         email = request.form.get('email').lower().strip()
+        role = request.form.get('role')
         password = request.form.get('password')
         password2 = request.form.get('password2')
+
+        print(role)
 
         if password != password2:
             return redirect('/signup?error=Passwords+dont+match')
@@ -273,12 +281,12 @@ def web_signup():
 
         con = create_connection(DATABASE)
 
-        query = "INSERT INTO user (first_name, last_name, email, password) " \
-                "VALUES (?, ?, ?, ?)"
+        query = "INSERT INTO user (first_name, last_name, email, password, role) " \
+                "VALUES (?, ?, ?, ?, ?)"
 
         cur = con.cursor()
         try:
-            cur.execute(query, (fname, lname, email, hashed_password))
+            cur.execute(query, (fname, lname, email, hashed_password, role, ))
         except sqlite3.IntegrityError:
             return redirect('/signup?error=email+is+already+in+use')
 
@@ -286,7 +294,7 @@ def web_signup():
         con.close()
         return redirect('/login')
 
-    return render_template('signup.html', categories=get_category_list(), logged_in=is_logged_in())
+    return render_template('signup.html', categories=get_category_list(), logged_in=is_logged_in(), teacher=is_teacher())
 
 
 @app.route('/logout')
@@ -296,6 +304,11 @@ def web_logout():
     print(list(session.keys()))
     return redirect('/')
 
+def is_teacher():
+    if session.get("role") == '1':
+        print("Is a teacher")
+        return True
+    return False
 
 def is_logged_in():
     if session.get("email") is None:

@@ -4,8 +4,8 @@
 
 {% block main %}
 {% for word in words %}
-{% if logged_in %}
 <p><strong>{{ word [0]}}</strong> ({{ word [1]}})</p>
+{% if teacher %}
 <p><a href="/editword/{{ word[3] }}">EDIT</a> || <a href="/confirmremoveword/{{ word[3] }}">DELETE</a></p>
 {% endif %}
 {% endfor %}
@@ -28,7 +28,8 @@
                 <td>{{ word[2] }}</td>
             </tr>
             </div>
-        {% endfor %}
     </tbody>
 </table>
+<p width="400"><img src="/static/images/{{ word[7] }}.jpg" alt=""></p>
+{% endfor %}
 {% endblock %}

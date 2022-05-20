@@ -3,7 +3,7 @@
 {% block heading %}Category{% endblock %}
 
 {% block main %}
-{% if logged_in %}
+{% if teacher %}
 {% for word in words %}
 <a href="/word/{{ word [3] }}">Cancel</a>
  <form class="dataForm" method="post">

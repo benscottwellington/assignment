@@ -9,7 +9,7 @@
                 <th>Maori Word</th>
                 <th>English Word</th>
                 <th>Image</th>
-                {% if logged_in %}
+                {% if teacher %}
                 <th>Delete Word</th>
                 {% endif %}
             </tr>
@@ -20,8 +20,8 @@
             <tr>
                 <td><a href="/word/{{ word[4] }}">{{ word[0] }}</a></td>
                 <td>{{ word[1] }}</td>
-                <td><img src="static/images/{{ word[6] }}.png" alt=""></td>
-                {% if logged_in %}
+                <td width="150"><img src="/static/images/{{ word[6] }}.jpg" alt=""></td>
+                {% if teacher %}
                 <td><a href="/removeword/{{ word[4] }}">x</a></td>
                 {% endif %}
             </tr>
@@ -30,7 +30,7 @@
     </tbody>
 </table>
 
-{% if logged_in %}
+{% if teacher %}
  <form class="dataForm" method="post">
      <div class="form-group">
         <div class="form-label">Maori Word:</div>
