@@ -5,7 +5,7 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block main %}
-<p>Kia Ora, {{ session.first_name }} welcome to Ben Scott's Maōri - English Dictionary!</p>
+<p>Kia Ora, <strong>{{ session.first_name }}</strong> welcome to Ben Scott's Maōri - English Dictionary!</p>
 {% if teacher %}
 <p>Because you are a <strong>teacher</strong> you have the ability to create, delete and edit words as well as create and delete categories</p>
 <form class="dataForm" method="POST" >

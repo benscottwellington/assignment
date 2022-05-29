@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Maōri Dictionary | Home{% endblock %}
+
+{% block heading %}Maōri - English Dictionary{% endblock %}
+
+{% block main %}
+{% if teacher %}
+{% for category in deletecategory %}
+<p> Are you sure you want to remove the category {{ category [1] }}</p>
+<p><a href="/removecategory/{{ category[0] }}">YES</a> <a href="/category/{{ category[0] }}">NO</a></p>
+{% endfor %}
+{% endif %}
+{% endblock %}

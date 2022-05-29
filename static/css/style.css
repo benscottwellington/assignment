@@ -13,7 +13,7 @@
 
 header {
     grid-area: header;
-    background-color: #0096FF;
+    background-color: darkred;
     padding: 1rem;
 }
 
@@ -98,11 +98,11 @@ img .thumb {
 footer {
     grid-area: footer;
     padding: 1rem;
-    background-color: #7393B3;
+    background-color: darkred;
 }
 
 footer p {
-    color: 	#0000FF;
+    color: 	whitesmoke;
     text-shadow: 2px 2px 4px #fff;
     font-size: 1.5rem;
 }
@@ -134,7 +134,7 @@ footer img {
 
     nav a:hover
     {
-      color: tomato;
+      color: red;
     }
 
 
@@ -228,7 +228,7 @@ footer img {
       padding: 50px;
       padding-top: 125px;
 
-      background: #ed9999;
+      background: whitesmoke;
       list-style-type: none;
       -webkit-font-smoothing: antialiased;
       /* to stop flickering of text in safari */
@@ -260,7 +260,7 @@ footer img {
     }
 
     nav {
-        background: linear-gradient(180deg, rgba(0,0,255,1) 0%, rgba(0, 0, 0, 1) 50%,  rgba(255,0,255,1) 100%);
+        background: linear-gradient(180deg, darkred 0%, black 50%,  red 100%);
         padding: 0.5rem;
     }
 
